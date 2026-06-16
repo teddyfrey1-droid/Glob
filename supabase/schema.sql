@@ -1,5 +1,7 @@
 -- Phase 1 — table de la waitlist (landing).
--- À exécuter dans l'éditeur SQL Supabase (ou via migration).
+--
+-- ✅ Déjà appliqué au projet Supabase "latitude" (eu-west-3 / Paris) via
+--    migration. Ce fichier sert de référence / pour recréer un environnement.
 
 create table if not exists public.waitlist (
   id         uuid primary key default gen_random_uuid(),
@@ -11,7 +13,14 @@ create table if not exists public.waitlist (
   unique (email, role)
 );
 
--- RLS activé : aucune policy publique.
--- Les insertions passent par la route serveur /api/waitlist avec la
--- SERVICE_ROLE_KEY (qui contourne la RLS). N'expose jamais cette clé côté client.
 alter table public.waitlist enable row level security;
+
+-- Inscription publique : on autorise UNIQUEMENT l'INSERT (jamais le SELECT)
+-- pour les rôles anon et authenticated. Conséquence :
+--   - la clé publishable suffit pour enregistrer une inscription ;
+--   - personne ne peut LIRE la liste via l'API publique (données protégées).
+create policy "waitlist_public_insert"
+  on public.waitlist
+  for insert
+  to anon, authenticated
+  with check (true);

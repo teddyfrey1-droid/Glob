@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseClient();
 
     if (supabase) {
       const { error } = await supabase

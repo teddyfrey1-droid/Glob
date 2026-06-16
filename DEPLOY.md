@@ -9,41 +9,36 @@ Une fois le repo importé sur Vercel, **chaque push déploie automatiquement**.
 2. **Add New… → Project**.
 3. **Import Git Repository** → autorise Vercel sur GitHub si demandé → choisis
    **`teddyfrey1-droid/glob`**.
-4. Vercel détecte **Next.js** tout seul. Laisse les réglages par défaut :
-   - Framework Preset : **Next.js**
-   - Build Command : `next build`
-   - Output Directory : `.next`
-   - Root Directory : `./`
-5. **Branche de production** — il n'y a pas encore de branche `main`, seulement
-   la branche de travail. Deux choix :
-   - dans **Settings → Git → Production Branch**, mets `claude/nifty-cray-f4z417`, **ou**
-   - demande-moi de préparer une branche `main` (je ne pousse pas sur `main`
-     sans ton accord explicite).
-6. *(Optionnel)* **Environment Variables** — pour activer la persistance de la
-   waitlist (sinon « mode démo ») :
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
+4. Vercel détecte **Next.js** tout seul. Laisse les réglages par défaut
+   (Build : `next build`, Output : `.next`, Root : `./`).
+5. La branche **`main`** existe : Vercel la prend comme branche de production.
+6. **Environment Variables** — pour activer la persistance de la waitlist
+   (voir tableau ci-dessous). Sans elles → « mode démo ».
 7. **Deploy**. 🎉
+
+> Après import, mes pushs sur `claude/nifty-cray-f4z417` créeront des **previews**
+> automatiques ; un merge dans `main` passera en **prod**.
+
+## Variables d'environnement (waitlist)
+
+Le projet Supabase **`latitude`** (eu-west-3 / Paris) est déjà créé : table
+`waitlist` + policy RLS en place. Pour activer la persistance, ajoute sur Vercel :
+
+| Variable | Valeur |
+|---|---|
+| `SUPABASE_URL` | `https://siuioxejppdwnsdnyuhq.supabase.co` |
+| `SUPABASE_PUBLISHABLE_KEY` | la clé `sb_publishable_…` (fournie dans le chat) |
+
+La clé publishable est **sûre à exposer** : une policy RLS n'autorise que
+l'`INSERT` dans `waitlist` (jamais la lecture). ⚠️ Après avoir ajouté/modifié des
+variables d'env sur Vercel, **relance un déploiement** pour qu'elles prennent effet.
 
 ## Après le premier déploiement
 
 - Chaque branche poussée → une **URL de preview** automatique.
-- La branche de production → l'**URL de prod**.
-- Donne-moi l'URL : je peux faire un **smoke test du live** (page + API waitlist)
-  via les outils Vercel.
-
-## Variables d'environnement
-
-| Variable | Rôle | Si absente |
-|---|---|---|
-| `SUPABASE_URL` | Endpoint du projet Supabase | mode démo |
-| `SUPABASE_SERVICE_ROLE_KEY` | Clé serveur (insert waitlist) | mode démo |
-
-⚠️ La *service role key* est **secrète** : uniquement en variable d'environnement
-serveur (Vercel), jamais exposée au client. Crée la table avec
-[`supabase/schema.sql`](supabase/schema.sql).
+- La branche de production (`main`) → l'**URL de prod**.
+- Donne-moi l'URL : je peux faire un **smoke test du live** (page + API waitlist).
 
 ## Pas besoin de `vercel.json`
 
-Next.js est nativement supporté par Vercel : aucune configuration
-supplémentaire n'est nécessaire.
+Next.js est nativement supporté par Vercel : aucune configuration nécessaire.
